@@ -54,3 +54,15 @@ config.cfg
 # shader files
 *.tmp
 
+# Code::Blocks projects
+*.project
+
+# VS Code
+.vscode/
+
+# clangd for VS Code
+.cache/
+
+
+# Game assets
+/sp/game/

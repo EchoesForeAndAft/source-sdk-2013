@@ -37,14 +37,19 @@ endif
 # CPPFLAGS == "c/c++ *preprocessor* flags" - not "cee-plus-plus flags"
 ARCH_FLAGS = 
 BUILDING_MULTI_ARCH = 0
+# Preserve cflags set in environment
+ENV_CFLAGS := $(CFLAGS)
+ENV_CXXFLAGS := $(CXXFLAGS)
 CPPFLAGS = $(DEFINES) $(addprefix -I, $(abspath $(INCLUDEDIRS) ))
-CFLAGS = $(ARCH_FLAGS) $(CPPFLAGS) $(WARN_FLAGS) -fvisibility=$(SymbolVisibility) $(OptimizerLevel) -pipe $(GCC_ExtraCompilerFlags) -Usprintf -Ustrncpy -UPROTECTED_THINGS_ENABLE
+BASE_CFLAGS = $(ARCH_FLAGS) $(CPPFLAGS) $(WARN_FLAGS) -fvisibility=$(SymbolVisibility) $(OptimizerLevel) -pipe $(GCC_ExtraCompilerFlags) -Usprintf -Ustrncpy -UPROTECTED_THINGS_ENABLE
+CFLAGS = $(BASE_CFLAGS) $(ENV_CFLAGS)
 # In -std=gnu++0x mode we get lots of errors about "error: narrowing conversion". -fpermissive
 # turns these into warnings in gcc, and -Wno-c++11-narrowing suppresses them entirely in clang 3.1+.
 ifeq ($(CXX),clang++)
-	CXXFLAGS = $(CFLAGS) -std=gnu++0x -Wno-c++11-narrowing -Wno-dangling-else
+	CXXFLAGS = $(CFLAGS) -std=gnu++0x -Wno-c++11-narrowing -Wno-dangling-else $(ENV_CXXFLAGS)
 else
-	CXXFLAGS = $(CFLAGS) -std=gnu++0x -fpermissive
+# !!! ABI COMPAT: -fabi-compat-version=2 is needed to generate the proper symbols for linking
+	CXXFLAGS = $(CFLAGS) -std=gnu++0x -fpermissive -fabi-compat-version=2 $(ENV_CXXFLAGS)
 endif
 DEFINES += -DVPROF_LEVEL=1 -DGNUC -DNO_HOOK_MALLOC -DNO_MALLOC_OVERRIDE
 LDFLAGS = $(CFLAGS) $(GCC_ExtraLinkerFlags) $(OptimizerLevel)

@@ -1,5 +1,20 @@
 # Files to ignore when considering what GIT should commit.
 
+*.lib
+*.dll
+*.pdb
+*.so
+*.so.dbg
+*.a
+*.dylib
+*.dylib.dSYM
+*_Release/
+*_Debug/
+devtools/linux/
+devtools/thirdparty/
+vphysics_jolt/
+compile_commands.json
+
 # Visual Studio 
 *.suo
 *.user
@@ -25,11 +40,8 @@ ipch
 *.mak.vpc_crc
 *.xcodeproj/
 obj*/
-!devtools/*.mak
-!utils/smdlexp/smdlexp.mak
+!devtools/*.mak*.lib
 
-# Specific Source build products
-client.pdb
 client.dll
 client.lib
 server.pdb
@@ -63,6 +75,9 @@ config.cfg
 # clangd for VS Code
 .cache/
 
+# Wine tools environment
+.wine/
 
 # Game assets
 /sp/game/
+/mp/game/

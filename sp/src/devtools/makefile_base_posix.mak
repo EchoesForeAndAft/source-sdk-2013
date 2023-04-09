@@ -49,14 +49,12 @@ ifeq ($(CXX),clang++)
 	CXXFLAGS = $(CFLAGS) -std=gnu++0x -Wno-c++11-narrowing -Wno-dangling-else $(ENV_CXXFLAGS)
 else
 # !!! ABI COMPAT: -fabi-compat-version=2 is needed to generate the proper symbols for linking
-	CXXFLAGS = $(CFLAGS) -std=gnu++0x -fpermissive -fabi-compat-version=2 $(ENV_CXXFLAGS)
+	CXXFLAGS = $(CFLAGS) -std=c++20 -fpermissive -fabi-compat-version=2 $(ENV_CXXFLAGS)
 endif
 DEFINES += -DVPROF_LEVEL=1 -DGNUC -DNO_HOOK_MALLOC -DNO_MALLOC_OVERRIDE
 LDFLAGS = $(CFLAGS) $(GCC_ExtraLinkerFlags) $(OptimizerLevel)
 GENDEP_CXXFLAGS = -MD -MP -MF $(@:.o=.P) 
 MAP_FLAGS =
-Srv_GAMEOUTPUTFILE = 
-COPY_DLL_TO_SRV = 0
 
 
 ifeq ($(STEAM_BRANCH),1)
@@ -160,11 +158,6 @@ ifeq ($(OS),Linux)
 		STRIP ?= true
 	endif
 	VSIGN ?= true
-
-	ifeq ($(SOURCE_SDK), 1)
-		Srv_GAMEOUTPUTFILE := $(GAMEOUTPUTFILE:.so=_srv.so)
-		COPY_DLL_TO_SRV := 1
-	endif
 
 	LINK_MAP_FLAGS = -Wl,-Map,$(@:.so=).map
 
@@ -469,13 +462,6 @@ $(SO_GameOutputFile): $(SO_File)
 	$(QUIET_PREFIX) $(GEN_SYM) $(GAMEOUTPUTFILE); 
 	$(QUIET_PREFIX) -$(STRIP) $(GAMEOUTPUTFILE);
 	$(QUIET_PREFIX) $(VSIGN) -signvalve $(GAMEOUTPUTFILE);
-	$(QUIET_PREFIX) if [ "$(COPY_DLL_TO_SRV)" = "1" ]; then\
-		echo "----" $(QUIET_ECHO_POSTFIX);\
-		echo "---- COPYING TO $(Srv_GAMEOUTPUTFILE) ----";\
-		echo "----" $(QUIET_ECHO_POSTFIX);\
-		cp -v $(GAMEOUTPUTFILE) $(Srv_GAMEOUTPUTFILE) $(QUIET_ECHO_POSTFIX);\
-		cp -v $(GAMEOUTPUTFILE)$(SYM_EXT) $(Srv_GAMEOUTPUTFILE)$(SYM_EXT) $(QUIET_ECHO_POSTFIX);\
-	fi;
 	$(QUIET_PREFIX) if [ "$(IMPORTLIBRARY)" != "" ]; then\
 		echo "----" $(QUIET_ECHO_POSTFIX);\
 		echo "---- COPYING TO IMPORT LIBRARY $(IMPORTLIBRARY) ----";\

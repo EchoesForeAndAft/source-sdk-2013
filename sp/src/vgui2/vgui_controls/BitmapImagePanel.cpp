@@ -16,10 +16,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#ifndef min
-#define min(a, b)  (((a) < (b)) ? (a) : (b))
-#endif
-
 using namespace vgui;
 
 //-----------------------------------------------------------------------------
@@ -95,7 +91,7 @@ void CBitmapImagePanel::ComputeImagePosition(int &x, int &y, int &w, int &h)
 	{
 		float xScale = (float)panelWide / (float)imageWide;
 		float yScale = (float)panelTall / (float)imageTall;
-		float scale = min( xScale, yScale );
+		float scale = MIN( xScale, yScale );
 
 		w = (int) (imageWide * scale);
 		h = (int) (imageTall * scale);

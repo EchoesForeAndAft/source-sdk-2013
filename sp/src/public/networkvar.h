@@ -190,6 +190,12 @@ public:
 		NetworkVarConstruct( m_Value );
 	}
 
+	FORCEINLINE explicit CNetworkVarBase( Type val )
+	: m_Value( val )
+	{
+		NetworkStateChanged();
+	}
+
 	template< class C >
 	const Type& operator=( const C &val ) 
 	{ 

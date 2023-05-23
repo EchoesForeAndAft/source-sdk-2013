@@ -28,6 +28,7 @@
 #include "utlhash.h"
 #include "UtlSortVector.h"
 #include "convar.h"
+#include "icommandline.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -2048,6 +2049,21 @@ void KeyValues::RecursiveMergeKeyValues( KeyValues *baseKV )
 	}
 }
 
+inline const bool IsSteamDeck()
+{
+	if ( CommandLine()->FindParm( "-gamepadui" ) )
+		return true;
+
+	if ( CommandLine()->FindParm( "-nogamepadui" ) )
+		return false;
+
+	const char *pszSteamDeckEnv = getenv( "SteamDeck" );
+	if ( pszSteamDeckEnv && *pszSteamDeckEnv )
+		return atoi( pszSteamDeckEnv ) != 0;
+
+	return false;
+}
+
 //-----------------------------------------------------------------------------
 // Returns whether a keyvalues conditional evaluates to true or false
 // Needs more flexibility with conditionals, checking convars would be nice.
@@ -2081,7 +2097,10 @@ bool EvaluateConditional( const char *str )
 
 	if ( Q_stristr( str, "$POSIX" ) )
 		return IsPosix() ^ bNot;
-	
+
+	if ( Q_stristr( str, "$DECK" ) )
+		return IsSteamDeck() ^ bNot;
+
 	return false;
 }
 

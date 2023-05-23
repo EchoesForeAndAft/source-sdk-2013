@@ -5,6 +5,7 @@
 #include <filesystem_tools.h>
 #include <cmdlib.h>
 #include <stdio.h>
+#include "tier0/cache_hints.h"
 
 static bool SameSign(float a, float b)
 {
@@ -233,8 +234,6 @@ void CacheOptimizedTriangle::ChangeIntoIntersectionFormat(void)
 
 }
 
-int n_intersection_calculations=0;
-
 int CacheOptimizedTriangle::ClassifyAgainstAxisSplit(int split_plane, float split_value)
 {
 	// classify a triangle against an axis-aligned plane
@@ -372,7 +371,7 @@ void RayTracingEnvironment::Trace4Rays(const FourRays &rays, fltx4 TMin, fltx4 T
 	if (! IsAnyNegative(active) )
 		return;												// missed bounding box
 
-	int32 mailboxids[MAILBOX_HASH_SIZE];					// used to avoid redundant triangle tests
+	alignas(16) int32 mailboxids[MAILBOX_HASH_SIZE];		// used to avoid redundant triangle tests
 	memset(mailboxids,0xff,sizeof(mailboxids));				// !!speed!! keep around?
 
 	int front_idx[3],back_idx[3];							// based on ray direction, whether to
@@ -438,6 +437,8 @@ void RayTracingEnvironment::Trace4Rays(const FourRays &rays, fltx4 TMin, fltx4 T
 			}
 			else
 			{
+				// We're going to access this, so might as well get 'er into cache
+				PREFETCH_CACHE_LINE( FrontChild + front_idx[split_plane_number], _MM_HINT_T0 );
 				fltx4 hits_back=AndSIMD(active,CmpLeSIMD(dist_to_sep_plane,TMax));
 				if (! IsAnyNegative(hits_back) )
 				{
@@ -476,7 +477,6 @@ void RayTracingEnvironment::Trace4Rays(const FourRays &rays, fltx4 TMin, fltx4 T
 				TriIntersectData_t const *tri = &( OptimizedTriangleList[tnum].m_Data.m_IntersectData );
 				if ( ( mailboxids[mbox_slot] != tnum ) && ( tri->m_nTriangleID != skip_id ) )
 				{
-					n_intersection_calculations++;
 					mailboxids[mbox_slot] = tnum;
 					// compute plane intersection
 
@@ -574,6 +574,9 @@ void RayTracingEnvironment::Trace4Rays(const FourRays &rays, fltx4 TMin, fltx4 T
 					
 				}
 			} while (--ntris);
+			
+			PREFETCH_CACHE_LINE( stack_ptr->node, _MM_HINT_T0 ); // Again, get a headstart here
+			
 			// now, check if all rays have terminated
 			fltx4 raydone=CmpLeSIMD(TMax,rslt_out->HitDistance);
 			if (! IsAnyNegative(raydone))

@@ -262,7 +262,7 @@ public:
 
 	FourVectors BackgroundColor;							//< color where no intersection
 	CUtlVector<CacheOptimizedKDNode> OptimizedKDTree;		//< the packed kdtree. root is 0
-	CUtlBlockVector<CacheOptimizedTriangle> OptimizedTriangleList; //< the packed triangles
+	CUtlVector<CacheOptimizedTriangle> OptimizedTriangleList; //< the packed triangles
 	CUtlVector<int32> TriangleIndexList;					//< the list of triangle indices.
 	CUtlVector<LightDesc_t> LightList;						//< the list of lights
 	CUtlVector<Vector> TriangleColors;						//< color of tries

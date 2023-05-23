@@ -146,7 +146,7 @@ void PerforceFileExplorer::PopulateDriveList()
 			char *pData = pFullPath;
 			while (*pData)
 			{
-				if (*pData == '\\')
+				if (*pData == CORRECT_PATH_SEPARATOR)
 				{
 					if (indent > 0)
 					{

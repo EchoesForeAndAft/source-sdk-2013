@@ -361,6 +361,10 @@ typedef void * HINSTANCE;
 #define MAX_PATH  260
 #endif
 
+#ifndef _MAX_EXT
+#define _MAX_EXT 32
+#endif
+
 #ifdef _WIN32
 #define MAX_UNICODE_PATH 32767
 #else
@@ -699,6 +703,7 @@ typedef void * HINSTANCE;
 #define _mkdir(dir) mkdir( dir, S_IRWXU | S_IRWXG | S_IRWXO )
 #define _wtoi(arg) wcstol(arg, NULL, 10)
 #define _wtoi64(arg) wcstoll(arg, NULL, 10)
+#define _stat stat
 
 typedef uint32 HMODULE;
 typedef void *HANDLE;
@@ -717,6 +722,8 @@ static FORCEINLINE double fsel(double fComparand, double fValGE, double fLT)
 {
 	return fComparand >= 0 ? fValGE : fLT;
 }
+
+#define isel(a,x,y) ( ((a) >= 0) ? (x) : (y) )
 
 #else
 

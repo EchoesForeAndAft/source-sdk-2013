@@ -8,6 +8,7 @@ $Include "$SRCDIR\vpc_scripts\version.vpc"
 
 $MacroRequired				"SRCDIR"
 $MacroRequired				"OUTBINNAME"	"$PROJECTNAME"
+$MacroRequired				"OUTBINDIR"
 $Macro IS_LIB_PROJECT		"1"
 $Include "$SRCDIR\vpc_scripts\source_posix_base.vpc"
 
@@ -30,7 +31,7 @@ $Configuration
 
 	$Linker
 	{
-		$OutputFile						"$SRCDIR/../game/$OUTBINNAME"
+		$OutputFile						"$OUTBINDIR/$OUTBINNAME"
 
 		// In order to get the Valve standard allocator memory alignment (16-byte
 		// alignment for objects that are a multiple of 16 bytes) we use tcmalloc.
@@ -65,6 +66,9 @@ $Project
 
 	$Folder	"Link Libraries" [$LINUXALL&&!$DEDICATED]
 	{
+		$Implib	"$LIBPUBLIC\tier0"
+		$Lib	"$LIBPUBLIC\tier1"
+		$Implib	"$LIBPUBLIC\vstdlib"
 		$File	"$SRCDIR/thirdparty/gperftools-2.0/.libs/libtcmalloc_minimal.so"
 	}
 }

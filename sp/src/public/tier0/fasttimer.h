@@ -195,7 +195,7 @@ inline void CTimeAdder::End()
 		~CTimeScopeMsg_##name() \
 		{ \
 			m_Timer.End(); \
-			Msg( #name "time: %.4fms\n", m_Timer.GetDuration().GetMillisecondsF() ); \
+			Msg( #name " time: %.4fms\n", m_Timer.GetDuration().GetMillisecondsF() ); \
 		} \
 	private:	\
 		CFastTimer	m_Timer; \

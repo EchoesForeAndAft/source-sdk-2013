@@ -957,6 +957,7 @@ void FileOpenDialog::AddFilter( const char *filter, const char *filterName, bool
 	kv->SetString( "filter", filter );
 	kv->SetString( "filterinfo", pFilterInfo );
 	int itemID = m_pFileTypeCombo->AddItem(filterName, kv);
+	kv->deleteThis();
 	if ( bActive )
 	{
 		m_pFileTypeCombo->ActivateItem(itemID);
@@ -1499,7 +1500,7 @@ void FileOpenDialog::OnOpen()
 	GetSelectedFileName( pFileName, sizeof( pFileName ) );
 
 	int nLen = Q_strlen( pFileName );
-	bool bSpecifiedDirectory = ( pFileName[nLen-1] == '/' || pFileName[nLen-1] == '\\' ) && (!IsOSX() || ( IsOSX() && !Q_stristr( pFileName, ".app" ) ) );
+	bool bSpecifiedDirectory = ( pFileName[nLen-1] == '/' || pFileName[nLen-1] == CORRECT_PATH_SEPARATOR ) && (!IsOSX() || ( IsOSX() && !Q_stristr( pFileName, ".app" ) ) );
 	Q_StripTrailingSlash( pFileName );
 
 	if ( !stricmp(pFileName, "..") )

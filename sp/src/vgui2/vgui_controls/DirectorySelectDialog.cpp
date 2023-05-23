@@ -173,19 +173,19 @@ inline const char *MoveToNextSubDir( const char *pStart, int *nCount )
 	int nMoved = 0;
 
 	// Move past pre-pended slash
-	if ( pStart[nMoved] == '\\' )
+	if ( pStart[nMoved] == CORRECT_PATH_SEPARATOR )
 	{
 		nMoved++;
 	}
 
 	// Move past the current block of text until we've hit the next path seperator (or end)
-	while ( pStart[nMoved] != '\\' && pStart[nMoved] != '\0' )
+	while ( pStart[nMoved] != CORRECT_PATH_SEPARATOR && pStart[nMoved] != '\0' )
 	{
 		nMoved++;
 	}
 
 	// Move past trailing slash
-	if ( pStart[nMoved] == '\\' )
+	if ( pStart[nMoved] == CORRECT_PATH_SEPARATOR )
 	{
 		nMoved++;
 	}
@@ -364,7 +364,9 @@ void DirectorySelectDialog::BuildDirTree()
 	m_pDirTree->RemoveAll();
 
 	// add in a root
-	int rootIndex = m_pDirTree->AddItem(new KeyValues("root", "Text", m_szCurrentDrive), -1);
+	KeyValues *kv = new KeyValues( "root", "Text", m_szCurrentDrive );
+	int rootIndex = m_pDirTree->AddItem( kv, -1 );
+	kv->deleteThis();
 
 	// build first level of the tree
 	ExpandTreeNode(m_szCurrentDrive, rootIndex);
@@ -399,6 +401,7 @@ void DirectorySelectDialog::ExpandTreeNode(const char *path, int parentNodeIndex
 		kv->SetInt("SelectedImage", 1);
 		kv->SetInt("Expand", DoesDirectoryHaveSubdirectories(path, pFileName));	
 		m_pDirTree->AddItem(kv, parentNodeIndex);
+		kv->deleteThis();
 	}
 	g_pFullFileSystem->FindClose( h );
 }
@@ -512,6 +515,7 @@ void DirectorySelectDialog::OnCreateDirectory(const char *dir)
 			kv->SetInt("Image", 1);
 			kv->SetInt("SelectedImage", 1);
 			int itemID = m_pDirTree->AddItem(kv, selectedIndex);
+			kv->deleteThis();
 
 			// select the item
 			m_pDirTree->AddSelectedItem( itemID, true );
